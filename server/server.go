@@ -10,6 +10,7 @@ import (
     "google.golang.org/grpc/reflection"
     "time"
     "fmt"
+    "math"
 )
 
 const (
@@ -29,15 +30,19 @@ func (server *clockProviderServer) GetTime(ctx context.Context, in *pb.Auth) (*p
     return &pb.Time{Timestamp: timestamp}, nil
 }
 
-func tick(interval time.Duration) {
-    c := time.Tick(interval)
-    for now := range c {
-        fmt.Printf("%s\n", now.Format(time.RFC3339Nano))
-    }
-}
-
 func main() {
-    go tick(1 * time.Second)
+
+
+    go func() {
+        toWait := int(math.Pow10(9)) - time.Now().Nanosecond()
+        timer := time.NewTimer(time.Nanosecond * time.Duration(toWait))
+        <- timer.C
+
+        ticker := time.NewTicker(time.Second)
+        for t:= range ticker.C {
+            fmt.Println(t.Format(time.RFC3339Nano))
+        }
+    } ()
 
     lis, err := net.Listen("tcp", port)
     if err != nil {

@@ -7,6 +7,7 @@ import (
     "google.golang.org/grpc"
     pb "github.com/nettee/tickgo/tick"
     "time"
+    "fmt"
 )
 
 const (
@@ -31,11 +32,7 @@ func main() {
             log.Fatalf("could not contact the server: %v", err)
         }
         serverTime := time.Unix(0, res.Timestamp)
-        localTime := time.Now()
-        log.Printf("server time: %s", serverTime.Format(time.RFC3339Nano))
-        log.Printf("local time: %s", localTime.Format(time.RFC3339Nano))
-        timeDiff := localTime.Sub(serverTime)
-        log.Printf("time diff: %d nano seconds", timeDiff.Nanoseconds())
+        fmt.Println(serverTime.Format(time.RFC3339Nano))
 
         time.Sleep(1 * time.Second)
     }
