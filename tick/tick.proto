@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package tick;
+
+// Interface exported by the server.
+service ClockProvider {
+    rpc GetTime(Auth) returns (Time) {}
+}
+
+message Auth {
+    string Username = 1;
+    string Password = 2;
+}
+
+message Time {
+    int32 Timestamp = 1;
+}
