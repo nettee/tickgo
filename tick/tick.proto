@@ -13,5 +13,5 @@ message Auth {
 }
 
 message Time {
-    int32 Timestamp = 1;
+    int64 Timestamp = 1;
 }
