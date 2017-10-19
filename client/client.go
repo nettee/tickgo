@@ -1,21 +1,21 @@
 package main
 
 import (
+    "fmt"
     "log"
+    "time"
 
     "golang.org/x/net/context"
     "google.golang.org/grpc"
+
     pb "github.com/nettee/tickgo/tick"
-    "time"
-    "fmt"
     "github.com/nettee/tickgo/ticker"
+    "github.com/nettee/tickgo/timefmt"
 )
 
 const (
     address = "localhost:50051"
 )
-
-//var timeStandard = time.Date(2017,10,1,0,0,0,0,time.UTC)
 
 func main() {
     // Set up a connection to the server
@@ -32,7 +32,7 @@ func main() {
         log.Fatalf("could not contact the server: %v", err)
     }
     serverTime := time.Unix(0, res.Timestamp)
-    fmt.Println(serverTime.Format(time.RFC3339Nano))
+    fmt.Printf("server time: %s\n", timefmt.Fmt(serverTime))
 
     ticker.Tick(serverTime.Nanosecond())
 }

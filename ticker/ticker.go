@@ -4,6 +4,8 @@ import (
 	"math"
 	"time"
 	"fmt"
+
+	"github.com/nettee/tickgo/timefmt"
 )
 
 func Tick(nanosecond int) {
@@ -13,7 +15,7 @@ func Tick(nanosecond int) {
 
 	ticker := time.NewTicker(time.Second)
 	for t := range ticker.C {
-		fmt.Println(t.Format(time.RFC3339Nano))
+		fmt.Println(timefmt.Fmt(t))
 	}
 }
 

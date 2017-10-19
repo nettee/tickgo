@@ -11,13 +11,12 @@ import (
 
     pb "github.com/nettee/tickgo/tick"
     "github.com/nettee/tickgo/ticker"
+    "github.com/nettee/tickgo/timefmt"
 )
 
 const (
     port = ":50051"
 )
-
-//var timeStandard = time.Date(2017,10,1,0,0,0,0,time.UTC)
 
 // server is used to implement pb.ClockProviderServer
 type clockProviderServer struct {
@@ -25,9 +24,9 @@ type clockProviderServer struct {
 }
 
 func (server *clockProviderServer) GetTime(ctx context.Context, in *pb.Auth) (*pb.Time, error) {
-    timestamp := time.Now().UnixNano();
-    log.Printf("Nanoseconds since 1970/1/1 00:00:00 UTC: %d", timestamp)
-    return &pb.Time{Timestamp: timestamp}, nil
+    t := time.Now()
+    log.Printf("get time: %s", timefmt.Fmt(t))
+    return &pb.Time{Timestamp: t.UnixNano()}, nil
 }
 
 func main() {
