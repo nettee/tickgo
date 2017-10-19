@@ -8,6 +8,7 @@ import (
     pb "github.com/nettee/tickgo/tick"
     "time"
     "fmt"
+    "github.com/nettee/tickgo/ticker"
 )
 
 const (
@@ -25,15 +26,13 @@ func main() {
     defer conn.Close()
     client := pb.NewClockProviderClient(conn)
 
-    for {
-        // Contact the server and print out its response.
-        res, err := client.GetTime(context.Background(), &pb.Auth{Username: "user", Password: "pass"})
-        if err != nil {
-            log.Fatalf("could not contact the server: %v", err)
-        }
-        serverTime := time.Unix(0, res.Timestamp)
-        fmt.Println(serverTime.Format(time.RFC3339Nano))
-
-        time.Sleep(1 * time.Second)
+    // Contact the server and print out its response.
+    res, err := client.GetTime(context.Background(), &pb.Auth{Username: "user", Password: "pass"})
+    if err != nil {
+        log.Fatalf("could not contact the server: %v", err)
     }
+    serverTime := time.Unix(0, res.Timestamp)
+    fmt.Println(serverTime.Format(time.RFC3339Nano))
+
+    ticker.Tick(serverTime.Nanosecond())
 }

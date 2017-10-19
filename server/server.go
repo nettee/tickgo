@@ -3,14 +3,14 @@ package main
 import (
     "log"
     "net"
+    "time"
 
     "golang.org/x/net/context"
     "google.golang.org/grpc"
-    pb "github.com/nettee/tickgo/tick"
     "google.golang.org/grpc/reflection"
-    "time"
-    "fmt"
-    "math"
+
+    pb "github.com/nettee/tickgo/tick"
+    "github.com/nettee/tickgo/ticker"
 )
 
 const (
@@ -32,17 +32,7 @@ func (server *clockProviderServer) GetTime(ctx context.Context, in *pb.Auth) (*p
 
 func main() {
 
-
-    go func() {
-        toWait := int(math.Pow10(9)) - time.Now().Nanosecond()
-        timer := time.NewTimer(time.Nanosecond * time.Duration(toWait))
-        <- timer.C
-
-        ticker := time.NewTicker(time.Second)
-        for t:= range ticker.C {
-            fmt.Println(t.Format(time.RFC3339Nano))
-        }
-    } ()
+    go ticker.Tick(time.Now().Nanosecond())
 
     lis, err := net.Listen("tcp", port)
     if err != nil {
