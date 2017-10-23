@@ -14,11 +14,21 @@ import (
     "github.com/nettee/tickgo/timefmt"
     "math"
     "fmt"
+    "errors"
 )
 
 const (
     port = ":50051"
 )
+
+var auths = map[string]string {
+    "user1": "pass1",
+    "user2": "pass2",
+    "user3": "pass3",
+    "user4": "pass4",
+    "user5": "pass5",
+    "user6": "pass6",
+}
 
 // server is used to implement pb.ClockProviderServer
 type clockProviderServer struct {
@@ -26,6 +36,18 @@ type clockProviderServer struct {
 }
 
 func (server *clockProviderServer) GetTime(ctx context.Context, in *pb.Auth) (*pb.Time, error) {
+
+    p, ok := auths[in.Username]
+    if !ok {
+        log.Printf("username not exist, username: `%s', password: `%s'", in.Username, in.Password)
+        return nil, errors.New("username not exist")
+    }
+    if p != in.Password {
+        log.Printf("wrong password, username: `%s', password: `%s'", in.Username, in.Password)
+        return nil, errors.New("wrong password")
+    }
+    log.Printf("auth passed, username: `%s', password: `%s'", in.Username, in.Password)
+    
     ticker.Wait(100 * time.Millisecond)
     t := time.Now()
     log.Printf("get time: %s", timefmt.FmtNano(t))

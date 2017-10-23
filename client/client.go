@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "log"
+    "os"
     "time"
 
     "golang.org/x/net/context"
@@ -27,22 +28,28 @@ func main() {
     defer conn.Close()
     client := pb.NewClockProviderClient(conn)
 
+    if len(os.Args) < 2 {
+        log.Fatalf("Error. Username and password not provided.")
+    }
+    username := os.Args[1]
+    password := os.Args[2]
+
     // Contact the server and print out its response.
     t1 := time.Now()
-    fmt.Printf("get time from server at %s\n", timefmt.FmtNano(t1))
-    res, err := client.GetTime(context.Background(), &pb.Auth{Username: "user", Password: "pass"})
+    log.Printf("get time from server at %s", timefmt.FmtNano(t1))
+    res, err := client.GetTime(context.Background(), &pb.Auth{Username: username, Password: password})
     if err != nil {
-        log.Fatalf("could not contact the server: %v", err)
+        log.Fatalf("Failed to connect to the server: %v", err)
     }
     t2 := time.Now()
     serverTime := time.Unix(0, res.Timestamp)
-    fmt.Printf("server time: %s\n", timefmt.FmtNano(serverTime))
-    fmt.Printf("got server time at %s\n", timefmt.FmtNano(t2))
+    log.Printf("server time: %s", timefmt.FmtNano(serverTime))
+    log.Printf("got server time at %s", timefmt.FmtNano(t2))
     rtt := t2.Sub(t1)
-    fmt.Printf("RTT: %d milliseconds\n", rtt.Nanoseconds() / int64(math.Pow10(6)))
+    log.Printf("RTT: %d milliseconds", rtt.Nanoseconds() / int64(math.Pow10(6)))
 
     realServerTime := serverTime.Add(rtt / 2)
-    fmt.Printf("real server time: %s\n", timefmt.FmtNano(realServerTime))
+    log.Printf("real server time: %s", timefmt.FmtNano(realServerTime))
 
     tickExpected(realServerTime)
 }
