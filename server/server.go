@@ -15,10 +15,7 @@ import (
     "math"
     "fmt"
     "errors"
-)
-
-const (
-    port = ":50051"
+    "os"
 )
 
 var auths = map[string]string {
@@ -47,7 +44,7 @@ func (server *clockProviderServer) GetTime(ctx context.Context, in *pb.Auth) (*p
         return nil, errors.New("wrong password")
     }
     log.Printf("auth passed, username: `%s', password: `%s'", in.Username, in.Password)
-    
+
     ticker.Wait(100 * time.Millisecond)
     t := time.Now()
     log.Printf("get time: %s", timefmt.FmtNano(t))
@@ -57,6 +54,10 @@ func (server *clockProviderServer) GetTime(ctx context.Context, in *pb.Auth) (*p
 
 func main() {
 
+    if len(os.Args) < 1 {
+        log.Fatalf("Error. Listening port not provided.")
+    }
+    port := os.Args[1]
 
     go func () {
         toWait := int(math.Pow10(9)) - time.Now().Nanosecond()

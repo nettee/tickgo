@@ -15,11 +15,15 @@ import (
     "github.com/nettee/tickgo/ticker"
 )
 
-const (
-    address = "localhost:50051"
-)
-
 func main() {
+
+    if len(os.Args) < 3 {
+        log.Fatalf("Error. Username and password not provided.")
+    }
+    address := os.Args[1]
+    username := os.Args[2]
+    password := os.Args[3]
+
     // Set up a connection to the server
     conn, err := grpc.Dial(address, grpc.WithInsecure())
     if err != nil {
@@ -27,12 +31,6 @@ func main() {
     }
     defer conn.Close()
     client := pb.NewClockProviderClient(conn)
-
-    if len(os.Args) < 2 {
-        log.Fatalf("Error. Username and password not provided.")
-    }
-    username := os.Args[1]
-    password := os.Args[2]
 
     // Contact the server and print out its response.
     t1 := time.Now()
